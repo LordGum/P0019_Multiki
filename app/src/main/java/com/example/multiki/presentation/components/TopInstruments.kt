@@ -17,6 +17,8 @@ import com.example.multiki.ui.theme.White
 
 @Composable
 fun TopInstruments(
+    backIconEnable: Boolean,
+    forwardIconEnable: Boolean,
     onBackClick: () -> Unit,
     onForwardClick: () -> Unit
 ) {
@@ -28,6 +30,8 @@ fun TopInstruments(
         verticalAlignment = Alignment.CenterVertically
     ) {
         BackAndForward(
+            backIconEnable = backIconEnable,
+            forwardIconEnable = forwardIconEnable,
             onBackClick = onBackClick,
             onForwardClick = onForwardClick
         )
@@ -38,25 +42,33 @@ fun TopInstruments(
 
 @Composable
 fun BackAndForward(
+    backIconEnable: Boolean,
+    forwardIconEnable: Boolean,
     onBackClick: () -> Unit,
     onForwardClick: () -> Unit
 ) {
     Row(horizontalArrangement = Arrangement.Absolute.SpaceAround) {
-        IconButton(onClick = onBackClick ) {
+        IconButton(
+            onClick = onBackClick,
+            enabled = backIconEnable
+        ) {
             Icon(
                 modifier = Modifier.size(32.dp),
                 painter = painterResource(id = R.drawable.ic_back_arrow),
                 contentDescription = null,
-                tint = White
+                tint = if(backIconEnable) White else White.copy(alpha = 0.3f)
             )
         }
 
-        IconButton(onClick = onForwardClick) {
+        IconButton(
+            onClick = onForwardClick,
+            enabled = forwardIconEnable
+        ) {
             Icon(
                 modifier = Modifier.size(32.dp),
                 painter = painterResource(id = R.drawable.ic_forward_arrow),
                 contentDescription = null,
-                tint = White
+                tint = if(forwardIconEnable) White else White.copy(alpha = 0.3f)
             )
         }
     }

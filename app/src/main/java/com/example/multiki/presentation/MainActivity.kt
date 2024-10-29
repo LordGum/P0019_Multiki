@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
                 val state = vm.screenState.collectAsState().value as MainScreenState.Value
                 val pathData = vm.pathData.collectAsState()
                 val pathList = vm.pathList.collectAsState()
+                val pathForwardList = vm.pathForwardList.collectAsState()
                 val paletteState = vm.paletteState.collectAsState()
                 val widthLineState = vm.widthLineState.collectAsState()
 
@@ -64,6 +65,8 @@ class MainActivity : ComponentActivity() {
                         .padding(top = 34.dp)
                 ) {
                     TopInstruments(
+                        backIconEnable = pathList.value.isNotEmpty(),
+                        forwardIconEnable = pathForwardList.value.isNotEmpty(),
                         onBackClick = { vm.removeLastPath() },
                         onForwardClick = { vm.returnLastPath() }
                     )

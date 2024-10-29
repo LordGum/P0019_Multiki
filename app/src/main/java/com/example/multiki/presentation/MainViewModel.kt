@@ -1,6 +1,5 @@
 package com.example.multiki.presentation
 
-import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.multiki.domain.PathData
@@ -17,8 +16,11 @@ class MainViewModel : ViewModel() {
     private val _pathData = MutableStateFlow(PathData())
     val pathData: StateFlow<PathData> = _pathData
 
-    private var _pathList = MutableStateFlow(listOf(PathData()))
+    private var _pathList = MutableStateFlow<List<PathData>>(listOf())
     val pathList: StateFlow<List<PathData>> = _pathList
+
+    private var _pathForwardList = MutableStateFlow<List<PathData>>(listOf())
+    val pathForwardList: StateFlow<List<PathData>> = _pathForwardList
 
     private val _paletteState = MutableStateFlow(false)
     val paletteState: StateFlow<Boolean> = _paletteState
@@ -44,9 +46,11 @@ class MainViewModel : ViewModel() {
             _screenState.update { MainScreenState.Value(activeTool = tool) }
         }
 
-        if(tool == Tool.COLOR_SIMPLE) _paletteState.update { !_paletteState.value }
-        else if(tool == Tool.COLOR_HARD) _paletteState.update { true }
-        else _paletteState.update { false }
+        when (tool) {
+            Tool.COLOR_SIMPLE -> _paletteState.update { !_paletteState.value }
+            Tool.COLOR_HARD -> _paletteState.update { true }
+            else -> _paletteState.update { false }
+        }
 
         if (tool == Tool.PEN) _widthLineState.update { !_widthLineState.value }
         else _widthLineState.update { false }
@@ -60,24 +64,30 @@ class MainViewModel : ViewModel() {
         val newList = _pathList.value.toMutableList()
         newList.add(pathData)
         _pathList.update { newList }
-
-        Log.d(
-            "lama",
-            "add ${_pathList.value.size}"
-        )
+        _pathForwardList.update { listOf() }
     }
 
     fun removeLastPath() {
         val newList = _pathList.value.toMutableList()
+        val forwardList = _pathForwardList.value.toMutableList()
         if (newList.size > 0) {
-            newList.removeIf{ pathD ->
+            forwardList.add(newList.last())
+            newList.removeIf { pathD ->
                 newList[newList.size - 1] == pathD
             }
         }
         _pathList.update { newList }
+        _pathForwardList.update { forwardList }
     }
 
     fun returnLastPath() {
-
+        val forwardList = _pathForwardList.value.toMutableList()
+        if (forwardList.isNotEmpty()) {
+            val newList = _pathList.value.toMutableList()
+            newList.add(forwardList.last())
+            forwardList.removeLast()
+            _pathList.update { newList }
+            _pathForwardList.update { forwardList }
+        }
     }
 }
