@@ -16,3 +16,5 @@ val Black = Color(0xFF000000)
 val Blue = Color(0xFF1976D2)
 val Red = Color(0xFFFF3D00)
 val Grey = Color(0xFF8B8B8B)
+
+val BoardGrey = Color(0x1655545429)

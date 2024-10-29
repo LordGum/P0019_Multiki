@@ -25,6 +25,7 @@ import com.example.multiki.R
 import com.example.multiki.domain.Tool
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
+import com.example.multiki.ui.theme.BoardGrey
 import com.example.multiki.ui.theme.LimeGreen
 import com.example.multiki.ui.theme.White
 
@@ -48,7 +49,7 @@ fun SimplePalette(
             .clip(RoundedCornerShape(4.dp))
             .border(
                 width = 1.dp,
-                color = Color(0x1655545429),
+                color = BoardGrey,
                 shape = RoundedCornerShape(4.dp)
             )
     ) {

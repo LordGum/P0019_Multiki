@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
@@ -30,6 +31,7 @@ import com.example.multiki.R
 import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
 import com.example.multiki.presentation.components.BottomInstruments
+import com.example.multiki.presentation.components.PenWidthLine
 import com.example.multiki.presentation.components.SimplePalette
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
@@ -48,6 +50,7 @@ class MainActivity : ComponentActivity() {
                 val state = vm.screenState.collectAsState().value as MainScreenState.Value
                 val pathData = vm.pathData.collectAsState()
                 val paletteState = vm.paletteState.collectAsState()
+                val widthLineState = vm.widthLineState.collectAsState()
 
                 val systemUiController = rememberSystemUiController()
                 systemUiController.setStatusBarColor(Black)
@@ -86,15 +89,23 @@ class MainActivity : ComponentActivity() {
                     SimplePalette(
                         activeTool = state.activeTool,
                         activeColor = state.activeColor,
-                        onHardPalette = {
-                            vm.changeTool(Tool.COLOR_HARD)
-                        },
+                        onHardPalette = { vm.changeTool(Tool.COLOR_HARD) },
                         onColorWhiteClick = { vm.changeColor(White) },
                         onColorRedClick = { vm.changeColor(Red) },
                         onColorBlackClick = { vm.changeColor(Black) },
                         onColorBlueClick = { vm.changeColor(Blue) }
                     )
                 }
+
+                if (widthLineState.value) {
+                    PenWidthLine(
+                        sliderPosition = pathData.value.lineWidth,
+                        onLineWidthChange = { lineWidth ->
+                            vm.changeLineWidth(lineWidth)
+                        }
+                    )
+                }
+
             }
         }
     }

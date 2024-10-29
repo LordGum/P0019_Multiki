@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import com.example.multiki.domain.PathData
@@ -45,7 +46,10 @@ fun DrawCanvas(
             drawPath(
                 path = pathData.path,
                 color = pathData.color,
-                style = Stroke(5f)
+                style = Stroke(
+                    pathData.lineWidth,
+                    cap = StrokeCap.Round
+                )
             )
         }
     }

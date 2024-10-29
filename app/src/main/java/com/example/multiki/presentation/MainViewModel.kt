@@ -19,6 +19,9 @@ class MainViewModel : ViewModel() {
     private val _paletteState = MutableStateFlow(false)
     val paletteState: StateFlow<Boolean> = _paletteState
 
+    private val _widthLineState = MutableStateFlow(false)
+    val widthLineState: StateFlow<Boolean> = _widthLineState
+
     fun changeColor(color: Color) {
         _screenState.update {
             MainScreenState.Value(
@@ -39,5 +42,12 @@ class MainViewModel : ViewModel() {
 
         if(tool == Tool.COLOR_SIMPLE) _paletteState.update { !_paletteState.value }
         else _paletteState.update { false }
+
+        if (tool == Tool.PEN) _widthLineState.update { !_widthLineState.value }
+        else _widthLineState.update { false }
+    }
+
+    fun changeLineWidth(lineWidth: Float) {
+        _pathData.update { pathData.value.copy(lineWidth = lineWidth) }
     }
 }
