@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.example.multiki.R
+import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
 import com.example.multiki.presentation.components.BottomInstruments
 import com.example.multiki.presentation.components.SimplePalette
@@ -45,6 +46,8 @@ class MainActivity : ComponentActivity() {
             MultikiTheme {
                 val vm = ViewModelProvider(this)[MainViewModel::class.java]
                 val state = vm.screenState.collectAsState().value as MainScreenState.Value
+                val pathData = vm.pathData.collectAsState()
+                val paletteState = vm.paletteState.collectAsState()
 
                 val systemUiController = rememberSystemUiController()
                 systemUiController.setStatusBarColor(Black)
@@ -62,7 +65,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxHeight(0.85f)
                             .padding(horizontal = 16.dp)
                             .clip(RoundedCornerShape(20.dp)),
-                        color = state.activeColor
+                        pathData = pathData
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     BottomInstruments(
@@ -75,14 +78,17 @@ class MainActivity : ComponentActivity() {
                         onColorSimpleClick = { vm.changeTool(Tool.COLOR_SIMPLE) }
                     )
                 }
-                if(
-                    state.activeTool == Tool.COLOR_SIMPLE ||
-                    state.activeTool == Tool.COLOR_HARD
-                    ) {
+                if (
+                    paletteState.value &&
+                    (state.activeTool == Tool.COLOR_SIMPLE ||
+                    state.activeTool == Tool.COLOR_HARD)
+                ) {
                     SimplePalette(
                         activeTool = state.activeTool,
                         activeColor = state.activeColor,
-                        onHardPalette = { vm.changeTool(Tool.COLOR_HARD) },
+                        onHardPalette = {
+                            vm.changeTool(Tool.COLOR_HARD)
+                        },
                         onColorWhiteClick = { vm.changeColor(White) },
                         onColorRedClick = { vm.changeColor(Red) },
                         onColorBlackClick = { vm.changeColor(Black) },
@@ -97,7 +103,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppCanvas(
     modifier: Modifier = Modifier,
-    color: Color
+    pathData: State<PathData>
 ) {
     Box {
         Image(
@@ -106,7 +112,6 @@ fun AppCanvas(
             contentDescription = stringResource(R.string.canvas_desc),
             contentScale = ContentScale.Crop
         )
-
-        DrawCanvas(modifier = modifier, color = color)
+        DrawCanvas(modifier = modifier, pathData = pathData)
     }
 }
