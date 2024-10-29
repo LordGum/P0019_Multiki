@@ -1,4 +1,4 @@
-package com.example.multiki
+package com.example.multiki.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

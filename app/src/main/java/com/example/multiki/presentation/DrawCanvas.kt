@@ -1,4 +1,4 @@
-package com.example.multiki
+package com.example.multiki.presentation
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -9,10 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import com.example.multiki.ui.theme.Blue
 
 @Composable
 fun DrawCanvas(
-    modifier: Modifier
+    modifier: Modifier,
+    color: Color = Blue
 ) {
     val tempPath = androidx.compose.ui.graphics.Path()
     val path = remember {
@@ -39,7 +41,7 @@ fun DrawCanvas(
     ) {
         drawPath(
             path = path.value,
-            color = Color.Red,
+            color = color,
             style = Stroke(10f)
         )
     }

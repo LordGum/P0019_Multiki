@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Multiki</string>
     <string name="canvas_desc">изображение текстуры холста</string>
+    <string name="pen_tool">инструмент карандаш</string>
+    <string name="brush_tool">Инструмент кисть</string>
+    <string name="eraser_tool">Инструмент ластик</string>
+    <string name="figure_choice_tool">Инструмент выбор фигуры</string>
+    <string name="color_simple_tool">Инструмент простая палитра</string>
+    <string name="hard_palette_tool">Сложная палитра</string>
 </resources>
