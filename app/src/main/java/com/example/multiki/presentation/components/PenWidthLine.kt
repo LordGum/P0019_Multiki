@@ -1,6 +1,5 @@
 package com.example.multiki.presentation.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Label
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -70,15 +68,10 @@ fun SliderWithCustomThumbSample(
     val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Text("Line width: ${(100 - sliderPosition * 100).toInt()}")
         Slider(
             value = sliderPosition,
             onValueChange = {
-                val tempPos = if (it > 0) it else 1f
-                Log.d(
-                    "lama",
-                    "tempPos = $tempPos"
-                )
+                val tempPos = if (it >= 0) it else 1f
                 sliderPosition = tempPos
                 onChange(100 - tempPos * 100)
             },
