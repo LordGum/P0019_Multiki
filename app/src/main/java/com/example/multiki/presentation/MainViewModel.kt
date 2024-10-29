@@ -1,5 +1,6 @@
 package com.example.multiki.presentation
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.multiki.domain.PathData
@@ -15,6 +16,9 @@ class MainViewModel : ViewModel() {
 
     private val _pathData = MutableStateFlow(PathData())
     val pathData: StateFlow<PathData> = _pathData
+
+    private var _pathList = MutableStateFlow(listOf(PathData()))
+    val pathList: StateFlow<List<PathData>> = _pathList
 
     private val _paletteState = MutableStateFlow(false)
     val paletteState: StateFlow<Boolean> = _paletteState
@@ -41,6 +45,7 @@ class MainViewModel : ViewModel() {
         }
 
         if(tool == Tool.COLOR_SIMPLE) _paletteState.update { !_paletteState.value }
+        else if(tool == Tool.COLOR_HARD) _paletteState.update { true }
         else _paletteState.update { false }
 
         if (tool == Tool.PEN) _widthLineState.update { !_widthLineState.value }
@@ -49,5 +54,30 @@ class MainViewModel : ViewModel() {
 
     fun changeLineWidth(lineWidth: Float) {
         _pathData.update { pathData.value.copy(lineWidth = lineWidth) }
+    }
+
+    fun addPath(pathData: PathData) {
+        val newList = _pathList.value.toMutableList()
+        newList.add(pathData)
+        _pathList.update { newList }
+
+        Log.d(
+            "lama",
+            "add ${_pathList.value.size}"
+        )
+    }
+
+    fun removeLastPath() {
+        val newList = _pathList.value.toMutableList()
+        if (newList.size > 0) {
+            newList.removeIf{ pathD ->
+                newList[newList.size - 1] == pathD
+            }
+        }
+        _pathList.update { newList }
+    }
+
+    fun returnLastPath() {
+
     }
 }

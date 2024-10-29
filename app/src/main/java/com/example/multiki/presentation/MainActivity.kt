@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
@@ -33,6 +32,7 @@ import com.example.multiki.domain.Tool
 import com.example.multiki.presentation.components.BottomInstruments
 import com.example.multiki.presentation.components.PenWidthLine
 import com.example.multiki.presentation.components.SimplePalette
+import com.example.multiki.presentation.components.TopInstruments
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.MultikiTheme
@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
                 val vm = ViewModelProvider(this)[MainViewModel::class.java]
                 val state = vm.screenState.collectAsState().value as MainScreenState.Value
                 val pathData = vm.pathData.collectAsState()
+                val pathList = vm.pathList.collectAsState()
                 val paletteState = vm.paletteState.collectAsState()
                 val widthLineState = vm.widthLineState.collectAsState()
 
@@ -60,15 +61,22 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .background(Black)
                         .fillMaxSize()
-                        .padding(top = 124.dp)
+                        .padding(top = 34.dp)
                 ) {
+                    TopInstruments(
+                        onBackClick = { vm.removeLastPath() },
+                        onForwardClick = { vm.returnLastPath() }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     AppCanvas(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(0.85f)
                             .padding(horizontal = 16.dp)
                             .clip(RoundedCornerShape(20.dp)),
-                        pathData = pathData
+                        pathData = pathData,
+                        pathList = pathList,
+                        onAddPath = { vm.addPath(it) }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     BottomInstruments(
@@ -114,7 +122,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppCanvas(
     modifier: Modifier = Modifier,
-    pathData: State<PathData>
+    pathData: State<PathData>,
+    pathList: State<List<PathData>>,
+    onAddPath: (PathData) -> Unit
 ) {
     Box {
         Image(
@@ -123,6 +133,11 @@ fun AppCanvas(
             contentDescription = stringResource(R.string.canvas_desc),
             contentScale = ContentScale.Crop
         )
-        DrawCanvas(modifier = modifier, pathData = pathData)
+        DrawCanvas(
+            modifier = modifier,
+            pathData = pathData,
+            pathList = pathList,
+            onAddPath = onAddPath
+        )
     }
 }

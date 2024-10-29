@@ -4,8 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -16,17 +14,19 @@ import com.example.multiki.domain.PathData
 @Composable
 fun DrawCanvas(
     modifier: Modifier,
-    pathData: State<PathData>
+    pathData: State<PathData>,
+    pathList: State<List<PathData>>,
+    onAddPath: (PathData) -> Unit
 ) {
     var tempPath = Path()
-    val pathList = remember { mutableStateListOf(PathData()) }
     Canvas(
         modifier = modifier
             .pointerInput(true) {
                 detectDragGestures(
                     onDragStart = { tempPath = Path() },
                     onDragEnd = {
-                        pathList.add(pathData.value.copy(path = tempPath))
+                        val newPath = pathData.value.copy(path = tempPath)
+                        onAddPath(newPath)
                     }
                 ) { change, dragAmount ->
                     tempPath.moveTo(
@@ -37,12 +37,12 @@ fun DrawCanvas(
                         change.position.x,
                         change.position.y
                     )
-
-                    pathList.add(pathData.value.copy(path = tempPath))
+                    val newPath = pathData.value.copy(path = tempPath)
+                    onAddPath(newPath)
                 }
             }
     ) {
-        pathList.forEach { pathData ->
+        pathList.value.forEach { pathData ->
             drawPath(
                 path = pathData.path,
                 color = pathData.color,
