@@ -2,6 +2,7 @@ package com.example.multiki.presentation
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
@@ -40,6 +41,23 @@ fun DrawCanvas(
                     val newPath = pathData.value.copy(path = tempPath)
                     onAddPath(newPath)
                 }
+            }
+            .pointerInput(true) {
+                detectTapGestures(
+                    onTap = { set ->
+                        tempPath = Path()
+                        tempPath.moveTo(
+                            set.x,
+                            set.y,
+                        )
+                        tempPath.lineTo(
+                            set.x,
+                            set.y
+                        )
+                        val newPath = pathData.value.copy(path = tempPath)
+                        onAddPath(newPath)
+                    }
+                )
             }
     ) {
         pathList.value.forEach { pathData ->
