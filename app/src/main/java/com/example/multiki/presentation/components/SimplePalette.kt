@@ -32,7 +32,7 @@ import com.example.multiki.ui.theme.White
 @Composable
 fun SimplePalette(
     activeTool: Tool,
-    activeColor: Color = Blue,
+    activeColor: Color,
     onHardPalette: () -> Unit,
     onColorWhiteClick: () -> Unit,
     onColorRedClick: () -> Unit,
@@ -131,11 +131,11 @@ fun SimplePalette(
 fun T() {
     SimplePalette(
         activeTool = Tool.COLOR_HARD,
+        activeColor = Black,
         onHardPalette = {},
         onColorWhiteClick = {},
         onColorRedClick = {},
         onColorBlackClick = {},
         onColorBlueClick = {}
     )
-
 }

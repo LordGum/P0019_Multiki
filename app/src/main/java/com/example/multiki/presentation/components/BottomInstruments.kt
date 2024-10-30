@@ -18,14 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.multiki.R
 import com.example.multiki.domain.Tool
-import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.LimeGreen
 import com.example.multiki.ui.theme.White
 
 @Composable
 fun BottomInstruments(
     activeTool: Tool,
-    activeColor: Color = Blue,
+    activeColor: Color,
     onPenClick: () -> Unit,
     onBrushClick: () -> Unit,
     onEraserClick: () -> Unit,

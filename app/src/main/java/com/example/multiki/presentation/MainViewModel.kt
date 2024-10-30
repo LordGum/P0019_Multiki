@@ -4,6 +4,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
+import com.example.multiki.ui.theme.Black
+import com.example.multiki.ui.theme.Blue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -28,11 +30,11 @@ class MainViewModel : ViewModel() {
     private val _widthLineState = MutableStateFlow(false)
     val widthLineState: StateFlow<Boolean> = _widthLineState
 
-    fun changeColor(color: Color) {
+    fun changeColor(color: Color, tool: Tool = Tool.COLOR_SIMPLE) {
         _screenState.update {
             MainScreenState.Value(
                 activeColor = color,
-                activeTool = Tool.COLOR_SIMPLE
+                activeTool = tool
             )
         }
         _pathData.update { _pathData.value.copy(color = color) }
@@ -40,10 +42,24 @@ class MainViewModel : ViewModel() {
 
     fun changeTool(tool: Tool) {
         if (_screenState.value is MainScreenState.Value) {
-            val oldState = _screenState.value as MainScreenState.Value
-            _screenState.update { oldState.copy(activeTool = tool) }
-        } else {
-            _screenState.update { MainScreenState.Value(activeTool = tool) }
+            when(tool) {
+                Tool.PEN -> {
+                    _screenState.update { MainScreenState.Value(Tool.PEN) }
+                    changeColor(Black, Tool.PEN)
+                    changeLineWidth(WIDTH_PEN)
+                }
+                Tool.BRUSH -> {
+                    val oldValue = _screenState.value as MainScreenState.Value
+                    if (oldValue.activeTool != tool)
+                        changeLineWidth(WIDTH_BRUSH)
+                    _screenState.update { MainScreenState.Value(Tool.BRUSH) }
+                    changeColor(Blue, Tool.BRUSH)
+                }
+                else -> {
+                    val oldState = _screenState.value as MainScreenState.Value
+                    _screenState.update { oldState.copy(activeTool = tool) }
+                }
+            }
         }
 
         when (tool) {
@@ -52,7 +68,7 @@ class MainViewModel : ViewModel() {
             else -> _paletteState.update { false }
         }
 
-        if (tool == Tool.PEN) _widthLineState.update { !_widthLineState.value }
+        if (tool == Tool.BRUSH) _widthLineState.update { !_widthLineState.value }
         else _widthLineState.update { false }
     }
 
@@ -89,5 +105,10 @@ class MainViewModel : ViewModel() {
             _pathList.update { newList }
             _pathForwardList.update { forwardList }
         }
+    }
+
+    companion object {
+        const val WIDTH_PEN = 1f
+        const val WIDTH_BRUSH = 50f
     }
 }
