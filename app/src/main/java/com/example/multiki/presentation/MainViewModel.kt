@@ -124,6 +124,11 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun onTapFilter() {
+        _paletteState.update { false }
+        _widthLineState.update { false }
+    }
+
     companion object {
         const val WIDTH_PEN = 1f
         const val WIDTH_BRUSH = 50f

@@ -33,6 +33,7 @@ import com.example.multiki.presentation.components.BottomInstruments
 import com.example.multiki.presentation.components.PenWidthLine
 import com.example.multiki.presentation.components.SimplePalette
 import com.example.multiki.presentation.components.TopInstruments
+import com.example.multiki.presentation.components.pointerInteropFilterNative
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.MultikiTheme
@@ -63,6 +64,10 @@ class MainActivity : ComponentActivity() {
                         .background(Black)
                         .fillMaxSize()
                         .padding(top = 34.dp)
+                        .pointerInteropFilterNative{
+                            vm.onTapFilter()
+                            false
+                        }
                 ) {
                     TopInstruments(
                         backIconEnable = pathList.value.isNotEmpty(),
