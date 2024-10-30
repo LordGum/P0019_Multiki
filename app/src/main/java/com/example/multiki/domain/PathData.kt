@@ -7,5 +7,6 @@ import com.example.multiki.ui.theme.Black
 data class PathData(
     val path: Path = Path(),
     val color: Color = Black,
-    val lineWidth: Float = 1f
+    val lineWidth: Float = 1f,
+    val isEraser: Boolean = false
 )

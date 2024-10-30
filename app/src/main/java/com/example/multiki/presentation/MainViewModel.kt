@@ -6,6 +6,7 @@ import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
+import com.example.multiki.ui.theme.White
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -42,12 +43,13 @@ class MainViewModel : ViewModel() {
 
     fun changeTool(tool: Tool) {
         if (_screenState.value is MainScreenState.Value) {
-            when(tool) {
+            when (tool) {
                 Tool.PEN -> {
                     _screenState.update { MainScreenState.Value(Tool.PEN) }
                     changeColor(Black, Tool.PEN)
                     changeLineWidth(WIDTH_PEN)
                 }
+
                 Tool.BRUSH -> {
                     val oldValue = _screenState.value as MainScreenState.Value
                     if (oldValue.activeTool != tool)
@@ -55,6 +57,7 @@ class MainViewModel : ViewModel() {
                     _screenState.update { MainScreenState.Value(Tool.BRUSH) }
                     changeColor(Blue, Tool.BRUSH)
                 }
+
                 else -> {
                     val oldState = _screenState.value as MainScreenState.Value
                     _screenState.update { oldState.copy(activeTool = tool) }
@@ -68,8 +71,22 @@ class MainViewModel : ViewModel() {
             else -> _paletteState.update { false }
         }
 
-        if (tool == Tool.BRUSH) _widthLineState.update { !_widthLineState.value }
+        if (tool == Tool.BRUSH || tool == Tool.ERASER) _widthLineState.update { !_widthLineState.value }
         else _widthLineState.update { false }
+
+        if (tool == Tool.ERASER) {
+            val oldPathData = _pathData.value
+            _pathData.update {
+                oldPathData.copy(
+                    isEraser = true,
+                    color = White,
+                    lineWidth = WIDTH_ERASER
+                )
+            }
+        } else {
+            val oldPathData = _pathData.value
+            _pathData.update { oldPathData.copy(isEraser = false) }
+        }
     }
 
     fun changeLineWidth(lineWidth: Float) {
@@ -110,5 +127,6 @@ class MainViewModel : ViewModel() {
     companion object {
         const val WIDTH_PEN = 1f
         const val WIDTH_BRUSH = 50f
+        const val WIDTH_ERASER = 40f
     }
 }

@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
                 if (
                     paletteState.value &&
                     (state.activeTool == Tool.COLOR_SIMPLE ||
-                    state.activeTool == Tool.COLOR_HARD)
+                            state.activeTool == Tool.COLOR_HARD)
                 ) {
                     SimplePalette(
                         activeTool = state.activeTool,
@@ -134,7 +134,7 @@ fun AppCanvas(
             modifier = modifier,
             painter = painterResource(id = R.drawable.canvas_back),
             contentDescription = stringResource(R.string.canvas_desc),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.None
         )
         DrawCanvas(
             modifier = modifier,

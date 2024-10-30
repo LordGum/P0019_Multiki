@@ -6,10 +6,15 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.imageResource
+import com.example.multiki.R
 import com.example.multiki.domain.PathData
 
 @Composable
@@ -20,6 +25,13 @@ fun DrawCanvas(
     onAddPath: (PathData) -> Unit
 ) {
     var tempPath = Path()
+
+    val imageBrush = ShaderBrush(
+        ImageShader(
+            image = ImageBitmap.imageResource(id = R.drawable.canvas_back)
+        )
+    )
+
     Canvas(
         modifier = modifier
             .pointerInput(true) {
@@ -69,6 +81,16 @@ fun DrawCanvas(
                     cap = StrokeCap.Round
                 )
             )
+            if (pathData.isEraser) {
+                drawPath(
+                    path = pathData.path,
+                    brush = imageBrush,
+                    style = Stroke(
+                        pathData.lineWidth,
+                        cap = StrokeCap.Round
+                    )
+                )
+            }
         }
     }
 }
