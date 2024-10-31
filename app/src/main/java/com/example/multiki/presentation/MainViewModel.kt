@@ -20,7 +20,7 @@ class MainViewModel : ViewModel() {
     private val _pathData = MutableStateFlow(PathData())
     val pathData: StateFlow<PathData> = _pathData
 
-    val pathList = mutableStateListOf(PathData())
+    val pathList = mutableStateListOf<PathData>()
 
     private var _pathForwardList = MutableStateFlow<List<PathData>>(listOf())
     val pathForwardList: StateFlow<List<PathData>> = _pathForwardList
