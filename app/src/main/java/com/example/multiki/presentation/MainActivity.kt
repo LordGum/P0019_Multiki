@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
                 val vm = ViewModelProvider(this)[MainViewModel::class.java]
                 val state = vm.screenState.collectAsState().value as MainScreenState.Value
                 val pathData = vm.pathData.collectAsState()
-                val pathList = vm.pathList.collectAsState()
+                val pathList = vm.pathList
                 val pathForwardList = vm.pathForwardList.collectAsState()
                 val paletteState = vm.paletteState.collectAsState()
                 val widthLineState = vm.widthLineState.collectAsState()
@@ -70,7 +71,7 @@ class MainActivity : ComponentActivity() {
                         }
                 ) {
                     TopInstruments(
-                        backIconEnable = pathList.value.isNotEmpty(),
+                        backIconEnable = pathList.isNotEmpty(),
                         forwardIconEnable = pathForwardList.value.isNotEmpty(),
                         onBackClick = { vm.removeLastPath() },
                         onForwardClick = { vm.returnLastPath() }
@@ -131,7 +132,7 @@ class MainActivity : ComponentActivity() {
 fun AppCanvas(
     modifier: Modifier = Modifier,
     pathData: State<PathData>,
-    pathList: State<List<PathData>>,
+    pathList: SnapshotStateList<PathData>,
     onAddPath: (PathData) -> Unit
 ) {
     Box {

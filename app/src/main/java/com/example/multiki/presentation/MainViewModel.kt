@@ -1,5 +1,6 @@
 package com.example.multiki.presentation
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.multiki.domain.PathData
@@ -19,8 +20,7 @@ class MainViewModel : ViewModel() {
     private val _pathData = MutableStateFlow(PathData())
     val pathData: StateFlow<PathData> = _pathData
 
-    private var _pathList = MutableStateFlow<List<PathData>>(listOf())
-    val pathList: StateFlow<List<PathData>> = _pathList
+    val pathList = mutableStateListOf(PathData())
 
     private var _pathForwardList = MutableStateFlow<List<PathData>>(listOf())
     val pathForwardList: StateFlow<List<PathData>> = _pathForwardList
@@ -94,32 +94,25 @@ class MainViewModel : ViewModel() {
     }
 
     fun addPath(pathData: PathData) {
-        val newList = _pathList.value.toMutableList()
-        newList.add(pathData)
-        _pathList.update { newList }
+        pathList.add(pathData)
         _pathForwardList.update { listOf() }
     }
 
     fun removeLastPath() {
-        val newList = _pathList.value.toMutableList()
         val forwardList = _pathForwardList.value.toMutableList()
-        if (newList.size > 0) {
-            forwardList.add(newList.last())
-            newList.removeIf { pathD ->
-                newList[newList.size - 1] == pathD
-            }
-        }
-        _pathList.update { newList }
+        forwardList.add(pathList.last())
         _pathForwardList.update { forwardList }
+
+        pathList.removeIf { pathD ->
+            pathList[pathList.size - 1] == pathD
+        }
     }
 
     fun returnLastPath() {
         val forwardList = _pathForwardList.value.toMutableList()
         if (forwardList.isNotEmpty()) {
-            val newList = _pathList.value.toMutableList()
-            newList.add(forwardList.last())
+            pathList.add(forwardList.last())
             forwardList.removeLast()
-            _pathList.update { newList }
             _pathForwardList.update { forwardList }
         }
     }

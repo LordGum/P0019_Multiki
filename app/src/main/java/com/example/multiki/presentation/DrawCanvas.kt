@@ -1,10 +1,12 @@
 package com.example.multiki.presentation
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
@@ -21,7 +23,7 @@ import com.example.multiki.domain.PathData
 fun DrawCanvas(
     modifier: Modifier,
     pathData: State<PathData>,
-    pathList: State<List<PathData>>,
+    pathList: SnapshotStateList<PathData>,
     onAddPath: (PathData) -> Unit
 ) {
     var tempPath = Path()
@@ -39,6 +41,7 @@ fun DrawCanvas(
                     onDragStart = { tempPath = Path() },
                     onDragEnd = {
                         val newPath = pathData.value.copy(path = tempPath)
+//                        pathList.add(newPath)
                         onAddPath(newPath)
                     }
                 ) { change, dragAmount ->
@@ -50,6 +53,10 @@ fun DrawCanvas(
                         change.position.x,
                         change.position.y
                     )
+
+                    if(pathList.size > 0) {
+                        pathList.removeAt(pathList.size - 1)
+                    }
                     val newPath = pathData.value.copy(path = tempPath)
                     onAddPath(newPath)
                 }
@@ -72,7 +79,7 @@ fun DrawCanvas(
                 )
             }
     ) {
-        pathList.value.forEach { pathData ->
+        pathList.forEach { pathData ->
             drawPath(
                 path = pathData.path,
                 color = pathData.color,
@@ -92,5 +99,6 @@ fun DrawCanvas(
                 )
             }
         }
+        Log.d("lama", "Size: ${pathList.size}")
     }
 }
