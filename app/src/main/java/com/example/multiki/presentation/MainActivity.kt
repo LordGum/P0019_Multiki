@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
@@ -140,7 +141,8 @@ fun AppCanvas(
             modifier = modifier,
             painter = painterResource(id = R.drawable.canvas_back),
             contentDescription = stringResource(R.string.canvas_desc),
-            contentScale = ContentScale.None
+            contentScale = ContentScale.None,
+            alignment = Alignment.TopStart
         )
         DrawCanvas(
             modifier = modifier,

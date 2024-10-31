@@ -41,7 +41,6 @@ fun DrawCanvas(
                     onDragStart = { tempPath = Path() },
                     onDragEnd = {
                         val newPath = pathData.value.copy(path = tempPath)
-//                        pathList.add(newPath)
                         onAddPath(newPath)
                     }
                 ) { change, dragAmount ->
