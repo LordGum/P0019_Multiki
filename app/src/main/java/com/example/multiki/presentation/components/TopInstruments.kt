@@ -20,7 +20,9 @@ fun TopInstruments(
     backIconEnable: Boolean,
     forwardIconEnable: Boolean,
     onBackClick: () -> Unit,
-    onForwardClick: () -> Unit
+    onForwardClick: () -> Unit,
+    onAddNewCanvas: () -> Unit,
+    onDeleteAnimation: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -35,7 +37,10 @@ fun TopInstruments(
             onBackClick = onBackClick,
             onForwardClick = onForwardClick
         )
-        FileInstruments()
+        FileInstruments(
+            onAddNewCanvas = onAddNewCanvas,
+            onDeleteAnimation = onDeleteAnimation
+        )
         PlayerInstrument()
     }
 }
@@ -75,11 +80,14 @@ fun BackAndForward(
 }
 
 @Composable
-fun FileInstruments() {
+fun FileInstruments(
+    onDeleteAnimation: () -> Unit,
+    onAddNewCanvas: () -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.Absolute.SpaceAround
     ) {
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = { onDeleteAnimation() }) {
             Icon(
                 modifier = Modifier.size(32.dp),
                 painter = painterResource(id = R.drawable.ic_delete),
@@ -88,7 +96,7 @@ fun FileInstruments() {
             )
         }
 
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = { onAddNewCanvas() }) {
             Icon(
                 modifier = Modifier.size(32.dp),
                 painter = painterResource(id = R.drawable.ic_add),

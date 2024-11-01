@@ -1,18 +1,31 @@
 package com.example.multiki.presentation
 
+import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.White
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
+        Log.d("MainViewModel", "Exception caught by exception handler")
+    }
+    private val coroutineContext = Dispatchers.IO + exceptionHandler
 
     private val _screenState = MutableStateFlow<MainScreenState>(MainScreenState.Value())
     val screenState: StateFlow<MainScreenState> = _screenState
@@ -96,6 +109,17 @@ class MainViewModel : ViewModel() {
     fun addPath(pathData: PathData) {
         pathList.add(pathData)
         _pathForwardList.update { listOf() }
+    }
+
+    fun addAnimation() {
+        viewModelScope.launch(coroutineContext) {
+            // TODO: здесь нужно сохранить
+        }
+        pathList.clear()
+    }
+
+    fun deleteAnimation() {
+        pathList.clear()
     }
 
     fun removeLastPath() {

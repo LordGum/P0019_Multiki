@@ -75,7 +75,9 @@ class MainActivity : ComponentActivity() {
                         backIconEnable = pathList.isNotEmpty(),
                         forwardIconEnable = pathForwardList.value.isNotEmpty(),
                         onBackClick = { vm.removeLastPath() },
-                        onForwardClick = { vm.returnLastPath() }
+                        onForwardClick = { vm.returnLastPath() },
+                        onAddNewCanvas = { vm.addAnimation() },
+                        onDeleteAnimation = { vm.deleteAnimation() }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     AppCanvas(

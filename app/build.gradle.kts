@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -70,4 +71,12 @@ dependencies {
     // System UI controller
     implementation(libs.accompanist.systemuicontroller)
 
+    //room
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-ktx:$roomVersion")
+    implementation("androidx.room:room-runtime:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+
+    //viewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 }
