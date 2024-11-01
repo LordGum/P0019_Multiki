@@ -1,6 +1,5 @@
-package com.example.multiki.presentation
+package com.example.multiki.presentation.components
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -12,8 +11,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.imageResource
 import com.example.multiki.R
@@ -23,8 +20,10 @@ import com.example.multiki.domain.PathData
 fun DrawCanvas(
     modifier: Modifier,
     pathData: State<PathData>,
+    saveFlag: Boolean,
     pathList: SnapshotStateList<PathData>,
-    onAddPath: (PathData) -> Unit
+    onAddPath: (PathData) -> Unit,
+    onSaveClick: (ImageBitmap) -> Unit
 ) {
     var tempPath = Path()
 
@@ -33,6 +32,7 @@ fun DrawCanvas(
             image = ImageBitmap.imageResource(id = R.drawable.canvas_back)
         )
     )
+
 
     Canvas(
         modifier = modifier
@@ -53,7 +53,7 @@ fun DrawCanvas(
                         change.position.y
                     )
 
-                    if(pathList.size > 0) {
+                    if (pathList.size > 0) {
                         pathList.removeAt(pathList.size - 1)
                     }
                     val newPath = pathData.value.copy(path = tempPath)
@@ -62,42 +62,24 @@ fun DrawCanvas(
             }
             .pointerInput(true) {
                 detectTapGestures(
-                    onTap = { set ->
+                    onTap = {
                         tempPath = Path()
-                        tempPath.moveTo(
-                            set.x,
-                            set.y,
-                        )
-                        tempPath.lineTo(
-                            set.x,
-                            set.y
-                        )
+                        tempPath.moveTo(it.x, it.y)
+                        tempPath.lineTo(it.x, it.y)
                         val newPath = pathData.value.copy(path = tempPath)
                         onAddPath(newPath)
                     }
                 )
             }
     ) {
-        pathList.forEach { pathData ->
-            drawPath(
-                path = pathData.path,
-                color = pathData.color,
-                style = Stroke(
-                    pathData.lineWidth,
-                    cap = StrokeCap.Round
-                )
-            )
-            if (pathData.isEraser) {
-                drawPath(
-                    path = pathData.path,
-                    brush = imageBrush,
-                    style = Stroke(
-                        pathData.lineWidth,
-                        cap = StrokeCap.Round
-                    )
-                )
-            }
-        }
-        Log.d("lama", "Size: ${pathList.size}")
+        val image = drawToBitmap(
+            pathList = pathList,
+            imageBrush = imageBrush,
+            height = this.size.height,
+            width = this.size.width,
+        )
+        drawImage(image)
+
+        if(saveFlag) { onSaveClick(image) }
     }
 }

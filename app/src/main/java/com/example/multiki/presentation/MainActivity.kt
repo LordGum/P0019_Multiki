@@ -1,5 +1,6 @@
 package com.example.multiki.presentation
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,11 +19,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +37,7 @@ import com.example.multiki.R
 import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
 import com.example.multiki.presentation.components.BottomInstruments
+import com.example.multiki.presentation.components.DrawCanvas
 import com.example.multiki.presentation.components.PenWidthLine
 import com.example.multiki.presentation.components.SimplePalette
 import com.example.multiki.presentation.components.TopInstruments
@@ -41,6 +47,9 @@ import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.MultikiTheme
 import com.example.multiki.ui.theme.White
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +65,9 @@ class MainActivity : ComponentActivity() {
                 val pathForwardList = vm.pathForwardList.collectAsState()
                 val paletteState = vm.paletteState.collectAsState()
                 val widthLineState = vm.widthLineState.collectAsState()
+                val saveFlag = vm.saveFlag.collectAsState()
+
+                val bmp = remember { mutableStateOf<Bitmap?>(null) }
 
                 val systemUiController = rememberSystemUiController()
                 systemUiController.setStatusBarColor(Black)
@@ -66,7 +78,7 @@ class MainActivity : ComponentActivity() {
                         .background(Black)
                         .fillMaxSize()
                         .padding(top = 34.dp)
-                        .pointerInteropFilterNative{
+                        .pointerInteropFilterNative {
                             vm.onTapFilter()
                             false
                         }
@@ -76,8 +88,13 @@ class MainActivity : ComponentActivity() {
                         forwardIconEnable = pathForwardList.value.isNotEmpty(),
                         onBackClick = { vm.removeLastPath() },
                         onForwardClick = { vm.returnLastPath() },
-                        onAddNewCanvas = { vm.addAnimation() },
-                        onDeleteAnimation = { vm.deleteAnimation() }
+                        onAddNewCanvas = { vm.changeSaveFlag(true) },
+                        onDeleteAnimation = {
+//                            vm.deleteAnimation()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                bmp.value = vm.loadAnimation("new_haha_file", application).await()
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     AppCanvas(
@@ -88,7 +105,10 @@ class MainActivity : ComponentActivity() {
                             .clip(RoundedCornerShape(20.dp)),
                         pathData = pathData,
                         pathList = pathList,
-                        onAddPath = { vm.addPath(it) }
+                        onAddPath = { vm.addPath(it) },
+                        saveFlag = saveFlag.value,
+                        onSaveClick = { vm.addAnimation(it) },
+                        imageBitmap = bmp.value
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     BottomInstruments(
@@ -136,7 +156,10 @@ fun AppCanvas(
     modifier: Modifier = Modifier,
     pathData: State<PathData>,
     pathList: SnapshotStateList<PathData>,
-    onAddPath: (PathData) -> Unit
+    onAddPath: (PathData) -> Unit,
+    saveFlag: Boolean,
+    onSaveClick: (ImageBitmap) -> Unit,
+    imageBitmap: Bitmap?
 ) {
     Box {
         Image(
@@ -146,11 +169,24 @@ fun AppCanvas(
             contentScale = ContentScale.None,
             alignment = Alignment.TopStart
         )
+
+        imageBitmap?.let {
+            Image(
+                modifier = modifier,
+                bitmap = imageBitmap.asImageBitmap(),
+                contentDescription = stringResource(R.string.canvas_desc),
+                contentScale = ContentScale.None,
+                alignment = Alignment.TopStart
+            )
+        }
+
         DrawCanvas(
             modifier = modifier,
             pathData = pathData,
             pathList = pathList,
-            onAddPath = onAddPath
+            onAddPath = onAddPath,
+            saveFlag = saveFlag,
+            onSaveClick = onSaveClick,
         )
     }
 }

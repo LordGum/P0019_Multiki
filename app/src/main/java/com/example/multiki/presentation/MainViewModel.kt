@@ -4,22 +4,26 @@ import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
+import com.example.multiki.presentation.components.getBitMap
+import com.example.multiki.presentation.components.saveBitmapToFile
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.White
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class MainViewModel(
-    application: Application
+   private val application: Application
 ) : AndroidViewModel(application) {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
@@ -34,6 +38,9 @@ class MainViewModel(
     val pathData: StateFlow<PathData> = _pathData
 
     val pathList = mutableStateListOf<PathData>()
+
+    private val _saveFlag = MutableStateFlow(false)
+    val saveFlag: StateFlow<Boolean> = _saveFlag
 
     private var _pathForwardList = MutableStateFlow<List<PathData>>(listOf())
     val pathForwardList: StateFlow<List<PathData>> = _pathForwardList
@@ -111,11 +118,21 @@ class MainViewModel(
         _pathForwardList.update { listOf() }
     }
 
-    fun addAnimation() {
-        viewModelScope.launch(coroutineContext) {
-            // TODO: здесь нужно сохранить
-        }
+    fun addAnimation(imageBitmap: ImageBitmap) {
+        saveBitmapToFile(
+            bitmap = imageBitmap.asAndroidBitmap(),
+            application = application,
+            fileName = "new_haha_file"
+        )
+        changeSaveFlag(false)
         pathList.clear()
+    }
+
+    fun loadAnimation(
+        fileName: String,
+        application: Application
+    ) = viewModelScope.async(exceptionHandler) {
+        getBitMap(fileName, application)
     }
 
     fun deleteAnimation() {
@@ -144,6 +161,10 @@ class MainViewModel(
     fun onTapFilter() {
         _paletteState.update { false }
         _widthLineState.update { false }
+    }
+
+    fun changeSaveFlag(flag: Boolean) {
+        _saveFlag.value = flag
     }
 
     companion object {
