@@ -2,6 +2,7 @@ package com.example.multiki.presentation
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,8 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +28,6 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -47,9 +45,6 @@ import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.MultikiTheme
 import com.example.multiki.ui.theme.White
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 val widthLineState = vm.widthLineState.collectAsState()
                 val saveFlag = vm.saveFlag.collectAsState()
 
-                val bmp = remember { mutableStateOf<Bitmap?>(null) }
+                val bitmapImage = vm.bitmapImage.collectAsState()
 
                 val systemUiController = rememberSystemUiController()
                 systemUiController.setStatusBarColor(Black)
@@ -91,9 +86,8 @@ class MainActivity : ComponentActivity() {
                         onAddNewCanvas = { vm.changeSaveFlag(true) },
                         onDeleteAnimation = {
 //                            vm.deleteAnimation()
-                            CoroutineScope(Dispatchers.Main).launch {
-                                bmp.value = vm.loadAnimation("new_haha_file", application).await()
-                            }
+                            vm.loadAnimation("new_haha_file", application)
+                            Log.d("lama", "load anim")
                         }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -108,7 +102,7 @@ class MainActivity : ComponentActivity() {
                         onAddPath = { vm.addPath(it) },
                         saveFlag = saveFlag.value,
                         onSaveClick = { vm.addAnimation(it) },
-                        imageBitmap = bmp.value
+                        imageBitmap = bitmapImage.value
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     BottomInstruments(
@@ -162,14 +156,6 @@ fun AppCanvas(
     imageBitmap: Bitmap?
 ) {
     Box {
-        Image(
-            modifier = modifier,
-            painter = painterResource(id = R.drawable.canvas_back),
-            contentDescription = stringResource(R.string.canvas_desc),
-            contentScale = ContentScale.None,
-            alignment = Alignment.TopStart
-        )
-
         imageBitmap?.let {
             Image(
                 modifier = modifier,
@@ -187,6 +173,7 @@ fun AppCanvas(
             onAddPath = onAddPath,
             saveFlag = saveFlag,
             onSaveClick = onSaveClick,
+            imageBitmap = imageBitmap
         )
     }
 }

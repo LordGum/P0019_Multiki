@@ -1,6 +1,7 @@
 package com.example.multiki.presentation
 
 import android.app.Application
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
@@ -17,10 +18,10 @@ import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.White
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class MainViewModel(
    private val application: Application
@@ -36,6 +37,9 @@ class MainViewModel(
 
     private val _pathData = MutableStateFlow(PathData())
     val pathData: StateFlow<PathData> = _pathData
+
+    private val _bitmapImage = MutableStateFlow<Bitmap?>(null)
+    val bitmapImage: StateFlow<Bitmap?> = _bitmapImage
 
     val pathList = mutableStateListOf<PathData>()
 
@@ -126,13 +130,16 @@ class MainViewModel(
         )
         changeSaveFlag(false)
         pathList.clear()
+        _bitmapImage.value = null
+        Log.d("lama", "add animation")
     }
 
     fun loadAnimation(
         fileName: String,
         application: Application
-    ) = viewModelScope.async(exceptionHandler) {
-        getBitMap(fileName, application)
+    )
+    = viewModelScope.launch (coroutineContext) {
+        _bitmapImage.update { getBitMap(fileName, application) }
     }
 
     fun deleteAnimation() {

@@ -15,9 +15,10 @@ import com.example.multiki.domain.PathData
 
 fun drawToBitmap(
     pathList: SnapshotStateList<PathData>,
-    imageBrush: ShaderBrush,
+    eraserBrush: ShaderBrush,
+    bitmapBrush: ShaderBrush,
     height: Float,
-    width: Float,
+    width: Float
 ): ImageBitmap {
 
     val drawScope = CanvasDrawScope()
@@ -34,6 +35,10 @@ fun drawToBitmap(
         canvas = canvas,
         size = size,
     ) {
+        drawRect(
+            size = size,
+            brush = bitmapBrush
+        )
         pathList.forEach { pathData ->
             drawPath(
                 path = pathData.path,
@@ -46,15 +51,15 @@ fun drawToBitmap(
             if (pathData.isEraser) {
                 drawPath(
                     path = pathData.path,
-                    brush = imageBrush,
+                    brush = eraserBrush,
                     style = Stroke(
                         pathData.lineWidth,
                         cap = StrokeCap.Round
                     )
                 )
             }
+            Log.d("lama", "draw path")
         }
-        Log.d("lama", "draw")
     }
 
     return bitmap

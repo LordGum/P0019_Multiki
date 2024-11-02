@@ -1,5 +1,6 @@
 package com.example.multiki.presentation.components
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -11,6 +12,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.imageResource
 import com.example.multiki.R
@@ -23,13 +25,19 @@ fun DrawCanvas(
     saveFlag: Boolean,
     pathList: SnapshotStateList<PathData>,
     onAddPath: (PathData) -> Unit,
-    onSaveClick: (ImageBitmap) -> Unit
+    onSaveClick: (ImageBitmap) -> Unit,
+    imageBitmap: Bitmap?
 ) {
     var tempPath = Path()
 
-    val imageBrush = ShaderBrush(
+    val eraserBrush = ShaderBrush(
         ImageShader(
             image = ImageBitmap.imageResource(id = R.drawable.canvas_back)
+        )
+    )
+    val bitmapBrush = ShaderBrush(
+        ImageShader(
+            image = imageBitmap?.asImageBitmap() ?: ImageBitmap.imageResource(id = R.drawable.canvas_back)
         )
     )
 
@@ -74,9 +82,10 @@ fun DrawCanvas(
     ) {
         val image = drawToBitmap(
             pathList = pathList,
-            imageBrush = imageBrush,
+            eraserBrush = eraserBrush,
+            bitmapBrush = bitmapBrush,
             height = this.size.height,
-            width = this.size.width,
+            width = this.size.width
         )
         drawImage(image)
 
