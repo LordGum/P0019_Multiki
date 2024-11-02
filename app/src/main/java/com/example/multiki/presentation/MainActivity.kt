@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
+import com.example.multiki.domain.Animation
 import com.example.multiki.domain.Tool
 import com.example.multiki.presentation.components.AnimationSlider
 import com.example.multiki.presentation.components.BottomInstruments
@@ -64,7 +65,8 @@ class MainActivity : ComponentActivity() {
                 val saveFlag = vm.saveFlag.collectAsState()
 
                 val bitmapImage = vm.bitmapImage.collectAsState()
-                val listForSlider = remember { mutableStateOf<List<Pair<Bitmap?, Long>>>(listOf()) }
+                val listForSlider =
+                    remember { mutableStateOf<List<Triple<Animation, Bitmap?, Long>>>(listOf()) }
 
                 Column(
                     modifier = Modifier
@@ -135,9 +137,11 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                if(sliderState.value) {
+                if (sliderState.value) {
                     AnimationSlider(
-                        list = listForSlider.value
+                        list = listForSlider.value,
+                        onAnimClick = { vm.changeActiveAnim(it) },
+                        activeAnim = state.activeAnim
                     )
                 }
 

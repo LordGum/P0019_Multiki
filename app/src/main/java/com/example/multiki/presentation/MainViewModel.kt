@@ -44,6 +44,8 @@ class MainViewModel(
     private val _bitmapImage = MutableStateFlow<Bitmap?>(null)
     val bitmapImage: StateFlow<Bitmap?> = _bitmapImage
 
+    private val _activeAnim = MutableStateFlow<Animation?>(null)
+
     private var _pathForwardList = MutableStateFlow<List<PathData>>(listOf())
     val pathForwardList: StateFlow<List<PathData>> = _pathForwardList
 
@@ -69,16 +71,16 @@ class MainViewModel(
     private val _screenState = MutableStateFlow<MainScreenState>(MainScreenState.Value())
     val screenState: StateFlow<MainScreenState> = combine(
         _screenState,
-        repository.getAnimList(),
+        _activeAnim,
         _bitmapImage,
         _pathForwardList,
         _pathData
-    ) { state, animList, bitmap, pathForwardList, pathData ->
+    ) { state, activeAnim, bitmap, pathForwardList, pathData ->
         if(state is MainScreenState.Value) {
             state.copy(
                 activeColor = state.activeColor,
                 activeTool = state.activeTool,
-                activeAnim = animList.firstOrNull(),
+                activeAnim = activeAnim,
                 bitmapImage = bitmap,
                 pathForwardList = pathForwardList,
                 pathData = pathData
@@ -188,15 +190,14 @@ class MainViewModel(
         changeSaveFlag(false)
         pathList.clear()
         _bitmapImage.value = null
-        Log.d("lama", "add animation")
     }
 
-    suspend fun loadAnimList(animList: List<Animation>):List<Pair<Bitmap?, Long>>  {
-        val list = mutableListOf<Pair<Bitmap?, Long>>()
+    suspend fun loadAnimList(animList: List<Animation>): List<Triple<Animation, Bitmap?, Long>>  {
+        val list = mutableListOf<Triple<Animation, Bitmap?, Long>>()
         for (i in animList.indices) {
             val anim = animList[i]
             val bitmap = getBitMapVM(anim.fileName).await()
-            list.add(bitmap to i.toLong()+1)
+            list.add(Triple(anim, bitmap, i.toLong()+1))
         }
         return list
     }
@@ -249,6 +250,15 @@ class MainViewModel(
 
     fun changeSliderState() {
         _sliderState.value = !_sliderState.value
+    }
+
+    fun changeActiveAnim(animation: Animation?) {
+        _activeAnim.update { animation }
+        viewModelScope.launch(coroutineContext) {
+            animation?.fileName?.let {
+                _bitmapImage.update { getBitMap(animation.fileName, application) }
+            }
+        }
     }
 
     companion object {
