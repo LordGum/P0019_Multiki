@@ -19,11 +19,13 @@ import com.example.multiki.ui.theme.White
 fun TopInstruments(
     backIconEnable: Boolean,
     forwardIconEnable: Boolean,
+    runVideoState: Boolean,
     onBackClick: () -> Unit,
     onForwardClick: () -> Unit,
     onAddNewCanvas: () -> Unit,
     onDeleteAnimation: () -> Unit,
-    onLayersClick: () -> Unit
+    onLayersClick: () -> Unit,
+    onRunClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -43,7 +45,10 @@ fun TopInstruments(
             onDeleteAnimation = onDeleteAnimation,
             onLayersClick = onLayersClick
         )
-        PlayerInstrument()
+        PlayerInstrument(
+            onRunClick= onRunClick,
+            runVideoState = runVideoState
+        )
     }
 }
 
@@ -120,13 +125,25 @@ fun FileInstruments(
 }
 
 @Composable
-fun PlayerInstrument() {
-    IconButton(onClick = { /*TODO*/ }) {
-        Icon(
-            modifier = Modifier.size(24.dp),
-            painter = painterResource(id = R.drawable.ic_play),
-            contentDescription = null,
-            tint = White
-        )
+fun PlayerInstrument(
+    onRunClick: () -> Unit,
+    runVideoState: Boolean
+) {
+    IconButton(onClick = { onRunClick() }) {
+        if(runVideoState){
+            Icon(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.ic_pause),
+                contentDescription = null,
+                tint = White
+            )
+        } else {
+            Icon(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.ic_play),
+                contentDescription = null,
+                tint = White
+            )
+        }
     }
 }

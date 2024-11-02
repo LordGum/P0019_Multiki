@@ -63,6 +63,9 @@ class MainViewModel(
     private val _sliderState = MutableStateFlow(false)
     val sliderState: StateFlow<Boolean> = _sliderState
 
+    private val _videoRunState = MutableStateFlow(false)
+    val videoRunState: StateFlow<Boolean> = _videoRunState
+
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
         Log.d("MainViewModel", "Exception caught by exception handler")
     }
@@ -248,8 +251,8 @@ class MainViewModel(
         _saveFlag.update { flag }
     }
 
-    fun changeSliderState() {
-        _sliderState.value = !_sliderState.value
+    fun changeSliderState(flag: Boolean) {
+        _sliderState.update { flag }
     }
 
     fun changeActiveAnim(animation: Animation?) {
@@ -259,6 +262,10 @@ class MainViewModel(
                 _bitmapImage.update { getBitMap(animation.fileName, application) }
             }
         }
+    }
+
+    fun changeVideoRunState() {
+        _videoRunState.update { !_videoRunState.value }
     }
 
     companion object {
