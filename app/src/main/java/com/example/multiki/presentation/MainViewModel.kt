@@ -18,6 +18,7 @@ import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.White
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -54,6 +55,10 @@ class MainViewModel(
 
     private val _widthLineState = MutableStateFlow(false)
     val widthLineState: StateFlow<Boolean> = _widthLineState
+
+    private val _sliderState = MutableStateFlow(false)
+    val sliderState: StateFlow<Boolean> = _sliderState
+
 
     fun changeColor(color: Color, tool: Tool = Tool.COLOR_SIMPLE) {
         _screenState.update {
@@ -142,6 +147,10 @@ class MainViewModel(
         _bitmapImage.update { getBitMap(fileName, application) }
     }
 
+    fun getBitMapVM(fileName: String) = viewModelScope.async(exceptionHandler) {
+        getBitMap(fileName, application)
+    }
+
     fun deleteAnimation() {
         pathList.clear()
     }
@@ -168,10 +177,15 @@ class MainViewModel(
     fun onTapFilter() {
         _paletteState.update { false }
         _widthLineState.update { false }
+        _sliderState.update { false }
     }
 
     fun changeSaveFlag(flag: Boolean) {
-        _saveFlag.value = flag
+        _saveFlag.update { flag }
+    }
+
+    fun changeSliderState() {
+        _sliderState.value = !_sliderState.value
     }
 
     companion object {

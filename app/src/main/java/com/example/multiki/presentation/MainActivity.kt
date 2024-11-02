@@ -32,8 +32,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.example.multiki.R
+import com.example.multiki.domain.Animation
 import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
+import com.example.multiki.presentation.components.AnimationSlider
 import com.example.multiki.presentation.components.BottomInstruments
 import com.example.multiki.presentation.components.DrawCanvas
 import com.example.multiki.presentation.components.PenWidthLine
@@ -60,6 +62,7 @@ class MainActivity : ComponentActivity() {
                 val pathForwardList = vm.pathForwardList.collectAsState()
                 val paletteState = vm.paletteState.collectAsState()
                 val widthLineState = vm.widthLineState.collectAsState()
+                val sliderState = vm.sliderState.collectAsState()
                 val saveFlag = vm.saveFlag.collectAsState()
 
                 val bitmapImage = vm.bitmapImage.collectAsState()
@@ -88,7 +91,8 @@ class MainActivity : ComponentActivity() {
 //                            vm.deleteAnimation()
                             vm.loadAnimation("new_haha_file", application)
                             Log.d("lama", "load anim")
-                        }
+                        },
+                        onLayersClick = { vm.changeSliderState() }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     AppCanvas(
@@ -137,6 +141,17 @@ class MainActivity : ComponentActivity() {
                         onLineWidthChange = { lineWidth ->
                             vm.changeLineWidth(lineWidth)
                         }
+                    )
+                }
+
+                if(sliderState.value) {
+                    val anim = Animation(
+                        createAt = 0L,
+                        fileName = "new_haha_file"
+                    )
+                    AnimationSlider(
+                        list = listOf(anim),
+                        viewModel = vm
                     )
                 }
 
