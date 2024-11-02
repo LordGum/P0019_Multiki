@@ -29,18 +29,14 @@ fun DrawCanvas(
     imageBitmap: Bitmap?
 ) {
     var tempPath = Path()
-
     val eraserBrush = ShaderBrush(
-        ImageShader(
-            image = ImageBitmap.imageResource(id = R.drawable.canvas_back)
-        )
+        ImageShader(ImageBitmap.imageResource(id = R.drawable.canvas_back))
     )
     val bitmapBrush = ShaderBrush(
         ImageShader(
-            image = imageBitmap?.asImageBitmap() ?: ImageBitmap.imageResource(id = R.drawable.canvas_back)
+            imageBitmap?.asImageBitmap() ?: ImageBitmap.imageResource(id = R.drawable.canvas_back)
         )
     )
-
 
     Canvas(
         modifier = modifier
@@ -89,6 +85,8 @@ fun DrawCanvas(
         )
         drawImage(image)
 
-        if(saveFlag) { onSaveClick(image) }
+        if (saveFlag) {
+            onSaveClick(image)
+        }
     }
 }

@@ -2,13 +2,10 @@ package com.example.multiki.presentation
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,23 +14,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import com.example.multiki.R
-import com.example.multiki.domain.Animation
-import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
 import com.example.multiki.presentation.components.AnimationSlider
 import com.example.multiki.presentation.components.BottomInstruments
@@ -47,16 +36,25 @@ import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.MultikiTheme
 import com.example.multiki.ui.theme.White
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        val vm = ViewModelProvider(this)[MainViewModel::class.java]
+
         setContent {
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setStatusBarColor(Black)
+            systemUiController.setNavigationBarColor(Black)
+
             MultikiTheme {
-                val vm = ViewModelProvider(this)[MainViewModel::class.java]
                 val state = vm.screenState.collectAsState().value as MainScreenState.Value
+                val animList = vm.animList.collectAsState(initial = listOf())
                 val pathData = vm.pathData.collectAsState()
                 val pathList = vm.pathList
                 val pathForwardList = vm.pathForwardList.collectAsState()
@@ -66,10 +64,7 @@ class MainActivity : ComponentActivity() {
                 val saveFlag = vm.saveFlag.collectAsState()
 
                 val bitmapImage = vm.bitmapImage.collectAsState()
-
-                val systemUiController = rememberSystemUiController()
-                systemUiController.setStatusBarColor(Black)
-                systemUiController.setNavigationBarColor(Black)
+                val listForSlider = remember { mutableStateOf<List<Pair<Bitmap?, Long>>>(listOf()) }
 
                 Column(
                     modifier = Modifier
@@ -87,15 +82,11 @@ class MainActivity : ComponentActivity() {
                         onBackClick = { vm.removeLastPath() },
                         onForwardClick = { vm.returnLastPath() },
                         onAddNewCanvas = { vm.changeSaveFlag(true) },
-                        onDeleteAnimation = {
-//                            vm.deleteAnimation()
-                            vm.loadAnimation("new_haha_file", application)
-                            Log.d("lama", "load anim")
-                        },
+                        onDeleteAnimation = { vm.deleteAnimation() },
                         onLayersClick = { vm.changeSliderState() }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    AppCanvas(
+                    DrawCanvas(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(0.85f)
@@ -145,50 +136,17 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if(sliderState.value) {
-                    val anim = Animation(
-                        createAt = 0L,
-                        fileName = "new_haha_file"
-                    )
                     AnimationSlider(
-                        list = listOf(anim),
-                        viewModel = vm
+                        list = listForSlider.value
                     )
                 }
 
+                LaunchedEffect(sliderState.value) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        listForSlider.value = vm.loadAnimList(animList.value)
+                    }
+                }
             }
         }
-    }
-}
-
-@Composable
-fun AppCanvas(
-    modifier: Modifier = Modifier,
-    pathData: State<PathData>,
-    pathList: SnapshotStateList<PathData>,
-    onAddPath: (PathData) -> Unit,
-    saveFlag: Boolean,
-    onSaveClick: (ImageBitmap) -> Unit,
-    imageBitmap: Bitmap?
-) {
-    Box {
-        imageBitmap?.let {
-            Image(
-                modifier = modifier,
-                bitmap = imageBitmap.asImageBitmap(),
-                contentDescription = stringResource(R.string.canvas_desc),
-                contentScale = ContentScale.None,
-                alignment = Alignment.TopStart
-            )
-        }
-
-        DrawCanvas(
-            modifier = modifier,
-            pathData = pathData,
-            pathList = pathList,
-            onAddPath = onAddPath,
-            saveFlag = saveFlag,
-            onSaveClick = onSaveClick,
-            imageBitmap = imageBitmap
-        )
     }
 }

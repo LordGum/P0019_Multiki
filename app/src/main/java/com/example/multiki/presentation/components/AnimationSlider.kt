@@ -1,6 +1,7 @@
 package com.example.multiki.presentation.components
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,8 +17,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,20 +27,13 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.multiki.R
-import com.example.multiki.domain.Animation
-import com.example.multiki.presentation.MainViewModel
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.BoardGrey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun AnimationSlider(
-    list: List<Animation>,
-    viewModel: MainViewModel
+    list: List<Pair<Bitmap?, Long>>
 ) {
     val listState = rememberLazyListState()
 
@@ -59,19 +51,14 @@ fun AnimationSlider(
             )
             .background(Black.copy(alpha = 0.14f))
             .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items(items = list, key = { it.createAt }) { item ->
+        items(items = list, key = { it.second}) {
             val initialBMP = ImageBitmap.imageResource(id = R.drawable.canvas_back)
-            val bitmap = remember { mutableStateOf(initialBMP) }
-            // TODO: нельзя так оставить с launch
-            CoroutineScope(Dispatchers.Main).launch {
-                bitmap.value = viewModel.getBitMapVM(item.fileName).await()?.asImageBitmap() ?: initialBMP
-            }
             AnimSlide(
-                bitmap = bitmap.value,
-                number = 1
+                bitmap = it.first?.asImageBitmap() ?: initialBMP,
+                number = it.second
             )
         }
     }
@@ -80,7 +67,7 @@ fun AnimationSlider(
 @Composable
 fun AnimSlide(
     bitmap: ImageBitmap,
-    number: Int
+    number: Long
 ) {
     val height = (bitmap.height / 25).dp
     val width = (bitmap.width / 25).dp
