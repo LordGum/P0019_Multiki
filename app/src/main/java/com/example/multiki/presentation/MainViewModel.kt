@@ -273,10 +273,6 @@ class MainViewModel(
         }
     }
 
-    fun changeVideoRunState() {
-        _videoRunState.update { !_videoRunState.value }
-    }
-
     companion object {
         const val WIDTH_PEN = 1f
         const val WIDTH_BRUSH = 50f

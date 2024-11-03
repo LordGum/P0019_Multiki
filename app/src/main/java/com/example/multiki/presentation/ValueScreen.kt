@@ -38,7 +38,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ValueScreen(
     vm: MainViewModel,
-    state: MainScreenState.Value
+    state: MainScreenState.Value,
+    onRunClick: () -> Unit
 ) {
     val animList = vm.animList.collectAsState(initial = listOf())
     val pathData = vm.pathData.collectAsState()
@@ -83,8 +84,7 @@ fun ValueScreen(
                 vm.changeSliderState(true)
             },
             onRunClick = {
-                vm.changeVideoRunState()
-                vm.changeScreenState(MainScreenState.Video)
+                onRunClick()
             }
         )
         Spacer(modifier = Modifier.height(8.dp))

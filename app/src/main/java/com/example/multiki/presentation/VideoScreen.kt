@@ -45,7 +45,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun VideoScreen(
     listAnim: List<Triple<Animation, Bitmap?, Long>>,
-    vm: MainViewModel
+    onBackClick: () -> Unit
 ) {
     val runState = remember { mutableStateOf(true) }
 
@@ -66,7 +66,7 @@ fun VideoScreen(
             modifier = Modifier
                 .padding(8.dp)
                 .size(32.dp)
-                .clickable { vm.changeScreenState(MainScreenState.Value()) },
+                .clickable { onBackClick() },
             tint = White
         )
 

@@ -2,6 +2,7 @@ package com.example.multiki.presentation
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -39,16 +40,24 @@ class MainActivity : ComponentActivity() {
                 when(val currentScreenState = screenState.value) {
                     is MainScreenState.Loading -> LoadingScreen()
                     is MainScreenState.Video -> {
-                        launchChange.value = true
+                        Log.d("lama", "video start")
                         VideoScreen(
                             listAnim = listForSlider.value,
-                            vm = vm
+                            onBackClick = {
+                                launchChange.value = false
+                                vm.changeScreenState(MainScreenState.Value())
+                            }
                         )
                     }
                     is MainScreenState.Value -> {
                         ValueScreen(
                             vm = vm,
-                            state = currentScreenState
+                            state = currentScreenState,
+                            onRunClick = {
+                                launchChange.value = true
+                                listForSlider.value = listOf()
+                                vm.changeScreenState(MainScreenState.Video)
+                            }
                         )
                     }
                 }
