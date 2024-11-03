@@ -7,4 +7,5 @@
     <string name="figure_choice_tool">Инструмент выбор фигуры</string>
     <string name="color_simple_tool">Инструмент простая палитра</string>
     <string name="hard_palette_tool">Сложная палитра</string>
+    <string name="back">Назад</string>
 </resources>

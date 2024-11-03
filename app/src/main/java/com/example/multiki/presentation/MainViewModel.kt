@@ -72,7 +72,7 @@ class MainViewModel(
     }
     private val coroutineContext = Dispatchers.IO + exceptionHandler
 
-    private val _screenState = MutableStateFlow<MainScreenState>(MainScreenState.Value())
+    private val _screenState = MutableStateFlow<MainScreenState>(MainScreenState.Loading)
     val screenState: StateFlow<MainScreenState> = combine(
         _screenState,
         _activeAnim,
@@ -99,13 +99,21 @@ class MainViewModel(
     )
 
     init {
-        val state = _screenState.value as MainScreenState.Value
-        state.activeAnim?.fileName?.let { fileName ->
-            viewModelScope.launch(coroutineContext) {
-                val bitmap = getBitMapVM(fileName).await()
-                _bitmapImage.update { bitmap }
+        if(_screenState.value is MainScreenState.Value) {
+            val state = _screenState.value as MainScreenState.Value
+            state.activeAnim?.fileName?.let { fileName ->
+                viewModelScope.launch(coroutineContext) {
+                    val bitmap = getBitMapVM(fileName).await()
+                    _bitmapImage.update { bitmap }
+                }
             }
+        } else {
+            _screenState.update { MainScreenState.Value() }
         }
+    }
+
+    fun changeScreenState(state: MainScreenState) {
+        _screenState.update { state }
     }
 
     fun changeColor(color: Color, tool: Tool = Tool.COLOR_SIMPLE) {

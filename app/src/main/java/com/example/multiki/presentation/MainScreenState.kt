@@ -16,4 +16,8 @@ sealed class MainScreenState  {
         var bitmapImage: Bitmap? = null,
         var pathForwardList: List<PathData> = listOf()
     ): MainScreenState()
+
+    data object Loading: MainScreenState()
+
+    data object Video : MainScreenState()
 }
