@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.multiki.R
@@ -38,7 +39,8 @@ import com.example.multiki.ui.theme.LimeGreen
 fun AnimationSlider(
     list: List<Triple<Animation, Bitmap?, Long>>,
     onAnimClick: (Animation?) -> Unit,
-    activeAnim: Animation?
+    activeAnim: Animation?,
+    animList: List<Animation>
 ) {
 
     LazyRow(
@@ -57,8 +59,11 @@ fun AnimationSlider(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if(list.isEmpty()) {
+        if(list.isEmpty() && animList.isNotEmpty()) {
             item { LoadingIndicator( Modifier.fillMaxWidth()) }
+        }
+        if (animList.isEmpty()) {
+            item { Text(text = stringResource(R.string.nothing)) }
         }
         items(items = list, key = { it.third}) {
             val initialBMP = ImageBitmap.imageResource(id = R.drawable.canvas_back)

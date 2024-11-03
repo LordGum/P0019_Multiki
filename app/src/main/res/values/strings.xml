@@ -8,4 +8,5 @@
     <string name="color_simple_tool">Инструмент простая палитра</string>
     <string name="hard_palette_tool">Сложная палитра</string>
     <string name="back">Назад</string>
+    <string name="nothing">Пока ничего нет</string>
 </resources>

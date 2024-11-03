@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
                     is MainScreenState.Value -> {
                         ValueScreen(
                             vm = vm,
+                            animList = animList.value,
                             state = currentScreenState,
                             onRunClick = {
                                 launchChange.value = true

@@ -38,10 +38,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun ValueScreen(
     vm: MainViewModel,
+    animList: List<Animation>,
     state: MainScreenState.Value,
     onRunClick: () -> Unit
 ) {
-    val animList = vm.animList.collectAsState(initial = listOf())
+    val animListState = vm.animList.collectAsState(initial = listOf())
     val pathData = vm.pathData.collectAsState()
     val pathList = vm.pathList
     val pathForwardList = vm.pathForwardList.collectAsState()
@@ -148,13 +149,14 @@ fun ValueScreen(
         AnimationSlider(
             list = listForSlider.value,
             onAnimClick = { vm.changeActiveAnim(it) },
-            activeAnim = state.activeAnim
+            activeAnim = state.activeAnim,
+            animList = animList
         )
     }
 
     LaunchedEffect(launchChange.value) {
         CoroutineScope(Dispatchers.IO).launch {
-            listForSlider.value = vm.loadAnimList(animList.value)
+            listForSlider.value = vm.loadAnimList(animListState.value)
         }
     }
 }
