@@ -2,7 +2,6 @@ package com.example.multiki.presentation
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -79,7 +78,6 @@ class MainActivity : ComponentActivity() {
                 val listForSlider =
                     remember { mutableStateOf<List<Triple<Animation, Bitmap?, Long>>>(listOf()) }
 
-                Log.d("lama", "loading = ${launchChange.value}")
                 Column(
                     modifier = Modifier
                         .background(Black)
@@ -103,9 +101,10 @@ class MainActivity : ComponentActivity() {
                         },
                         onLayersClick = {
                             vm.changeSliderState(true)
-                            launchChange.value = !launchChange.value
                         },
-                        onRunClick = { vm.changeVideoRunState() }
+                        onRunClick = {
+                            launchChange.value
+                            vm.changeVideoRunState() }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     if(!videoRunState.value) {
@@ -119,11 +118,17 @@ class MainActivity : ComponentActivity() {
                             pathList = pathList,
                             onAddPath = { vm.addPath(it) },
                             saveFlag = saveFlag.value,
-                            onSaveClick = { vm.addAnimation(it) },
-                            imageBitmap = bitmapImage.value
+                            onSaveClick = { bitmap, anim ->
+                                vm.addAnimation(
+                                    imageBitmap = bitmap,
+                                    activeAnim = anim
+                                )
+                            },
+                            imageBitmap = bitmapImage.value,
+                            activeAnimation = state.activeAnim
                         )
                     } else {
-                        launchChange.value = !launchChange.value
+                        launchChange.value = true
                         VideoBox(listForSlider = listForSlider.value)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -163,6 +168,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if (sliderState.value) {
+                    launchChange.value = true
                     AnimationSlider(
                         list = listForSlider.value,
                         onAnimClick = { vm.changeActiveAnim(it) },
@@ -198,7 +204,6 @@ fun VideoBox(
             contentScale = ContentScale.None,
             alignment = Alignment.TopStart
         )
-        Log.d("lama", "listForSlider = $listForSlider")
         when(listForSlider.size) {
             0 -> {
                 LoadingIndicator(modifier = Modifier.fillMaxHeight(0.85f))

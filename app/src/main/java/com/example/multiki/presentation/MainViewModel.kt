@@ -175,9 +175,9 @@ class MainViewModel(
         _pathForwardList.update { listOf() }
     }
 
-    fun addAnimation(imageBitmap: ImageBitmap) {
-        val createAt = Date().time
-        val fileName = repository.getFileName(createAt)
+    fun addAnimation(imageBitmap: ImageBitmap, activeAnim: Animation?) {
+        val createAt = activeAnim?.createAt ?: Date().time
+        val fileName = activeAnim?.fileName ?: repository.getFileName(createAt)
 
         viewModelScope.launch(coroutineContext) {
             saveBitmapToFile(
@@ -194,6 +194,7 @@ class MainViewModel(
         changeSaveFlag(false)
         pathList.clear()
         _bitmapImage.value = null
+        _activeAnim.update { null }
     }
 
     suspend fun loadAnimList(animList: List<Animation>): List<Triple<Animation, Bitmap?, Long>>  {
