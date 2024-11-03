@@ -73,12 +73,13 @@ class MainActivity : ComponentActivity() {
                 val sliderState = vm.sliderState.collectAsState()
                 val saveFlag = vm.saveFlag.collectAsState()
                 val videoRunState = vm.videoRunState.collectAsState()
-                val loadingState = remember { mutableStateOf(false) }
+                val launchChange = remember { mutableStateOf(false) }
 
                 val bitmapImage = vm.bitmapImage.collectAsState()
                 val listForSlider =
                     remember { mutableStateOf<List<Triple<Animation, Bitmap?, Long>>>(listOf()) }
 
+                Log.d("lama", "loading = ${launchChange.value}")
                 Column(
                     modifier = Modifier
                         .background(Black)
@@ -96,8 +97,14 @@ class MainActivity : ComponentActivity() {
                         onBackClick = { vm.removeLastPath() },
                         onForwardClick = { vm.returnLastPath() },
                         onAddNewCanvas = { vm.changeSaveFlag(true) },
-                        onDeleteAnimation = { vm.deleteAnimation(state.activeAnim) },
-                        onLayersClick = { vm.changeSliderState(true) },
+                        onDeleteAnimation = {
+                            vm.deleteAnimation(state.activeAnim)
+                            launchChange.value = !launchChange.value
+                        },
+                        onLayersClick = {
+                            vm.changeSliderState(true)
+                            launchChange.value = !launchChange.value
+                        },
                         onRunClick = { vm.changeVideoRunState() }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -116,7 +123,7 @@ class MainActivity : ComponentActivity() {
                             imageBitmap = bitmapImage.value
                         )
                     } else {
-                        loadingState.value = true
+                        launchChange.value = !launchChange.value
                         VideoBox(listForSlider = listForSlider.value)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -156,7 +163,6 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if (sliderState.value) {
-                    loadingState.value = true
                     AnimationSlider(
                         list = listForSlider.value,
                         onAnimClick = { vm.changeActiveAnim(it) },
@@ -164,11 +170,10 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                LaunchedEffect(loadingState.value) {
+                LaunchedEffect(launchChange.value) {
                     CoroutineScope(Dispatchers.IO).launch {
                         listForSlider.value = vm.loadAnimList(animList.value)
                     }
-                    loadingState.value = false
                 }
             }
         }
