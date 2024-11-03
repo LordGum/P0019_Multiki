@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -53,9 +54,12 @@ fun AnimationSlider(
             )
             .background(Black.copy(alpha = 0.14f))
             .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        if(list.isEmpty()) {
+            item { LoadingIndicator( Modifier.fillMaxWidth()) }
+        }
         items(items = list, key = { it.third}) {
             val initialBMP = ImageBitmap.imageResource(id = R.drawable.canvas_back)
             AnimSlide(
@@ -65,6 +69,7 @@ fun AnimationSlider(
                 onAnimClick = onAnimClick,
                 activityAnim = activeAnim
             )
+            Spacer(modifier = Modifier.width(12.dp))
         }
     }
 }
@@ -86,7 +91,7 @@ fun AnimSlide(
             .border(
                 width = 1.dp,
                 shape = RoundedCornerShape(4.dp),
-                color = if(anim == activityAnim) LimeGreen else Black,
+                color = if (anim == activityAnim) LimeGreen else Black,
             )
             .clickable { onAnimClick(anim) }
     ) {

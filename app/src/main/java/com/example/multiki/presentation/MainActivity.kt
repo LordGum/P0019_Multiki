@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,10 +36,11 @@ import com.example.multiki.domain.Tool
 import com.example.multiki.presentation.components.AnimationSlider
 import com.example.multiki.presentation.components.BottomInstruments
 import com.example.multiki.presentation.components.DrawCanvas
+import com.example.multiki.presentation.components.LoadingIndicator
 import com.example.multiki.presentation.components.PenWidthLine
 import com.example.multiki.presentation.components.SimplePalette
 import com.example.multiki.presentation.components.TopInstruments
-import com.example.multiki.presentation.components.pointerInteropFilterNative
+import com.example.multiki.presentation.utils.pointerInteropFilterNative
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.MultikiTheme
@@ -73,12 +73,11 @@ class MainActivity : ComponentActivity() {
                 val sliderState = vm.sliderState.collectAsState()
                 val saveFlag = vm.saveFlag.collectAsState()
                 val videoRunState = vm.videoRunState.collectAsState()
+                val loadingState = remember { mutableStateOf(false) }
 
                 val bitmapImage = vm.bitmapImage.collectAsState()
                 val listForSlider =
                     remember { mutableStateOf<List<Triple<Animation, Bitmap?, Long>>>(listOf()) }
-
-                Log.d("lama", "state anim = ${state.activeAnim}")
 
                 Column(
                     modifier = Modifier
@@ -117,7 +116,8 @@ class MainActivity : ComponentActivity() {
                             imageBitmap = bitmapImage.value
                         )
                     } else {
-                        VideoBox(listForSlider)
+                        loadingState.value = true
+                        VideoBox(listForSlider = listForSlider.value)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     BottomInstruments(
@@ -156,6 +156,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if (sliderState.value) {
+                    loadingState.value = true
                     AnimationSlider(
                         list = listForSlider.value,
                         onAnimClick = { vm.changeActiveAnim(it) },
@@ -163,10 +164,11 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                LaunchedEffect(sliderState.value) {
+                LaunchedEffect(loadingState.value) {
                     CoroutineScope(Dispatchers.IO).launch {
                         listForSlider.value = vm.loadAnimList(animList.value)
                     }
+                    loadingState.value = false
                 }
             }
         }
@@ -175,7 +177,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun VideoBox(
-    listForSlider: State<List<Triple<Animation, Bitmap?, Long>>>
+    listForSlider: List<Triple<Animation, Bitmap?, Long>>
 ) {
     Box(
         contentAlignment = Alignment.Center
@@ -191,9 +193,17 @@ fun VideoBox(
             contentScale = ContentScale.None,
             alignment = Alignment.TopStart
         )
-        VideoScreen(
-            modifier = Modifier.fillMaxWidth(),
-            listAnim = listForSlider.value
-        )
+        Log.d("lama", "listForSlider = $listForSlider")
+        when(listForSlider.size) {
+            0 -> {
+                LoadingIndicator(modifier = Modifier.fillMaxHeight(0.85f))
+            }
+            else -> {
+                VideoScreen(
+                    modifier = Modifier.fillMaxWidth(),
+                    listAnim = listForSlider
+                )
+            }
+        }
     }
 }

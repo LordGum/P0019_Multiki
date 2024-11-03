@@ -13,9 +13,9 @@ import com.example.multiki.data.RepositoryImpl
 import com.example.multiki.domain.Animation
 import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
-import com.example.multiki.presentation.components.deleteFile
-import com.example.multiki.presentation.components.getBitMap
-import com.example.multiki.presentation.components.saveBitmapToFile
+import com.example.multiki.presentation.utils.deleteFile
+import com.example.multiki.presentation.utils.getBitMap
+import com.example.multiki.presentation.utils.saveBitmapToFile
 import com.example.multiki.ui.theme.Black
 import com.example.multiki.ui.theme.Blue
 import com.example.multiki.ui.theme.White
@@ -256,7 +256,6 @@ class MainViewModel(
     }
 
     fun changeActiveAnim(animation: Animation?) {
-        Log.d("lama", "change anim $animation")
         _activeAnim.update { animation }
         viewModelScope.launch(coroutineContext) {
             animation?.fileName?.let {

@@ -17,6 +17,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.imageResource
 import com.example.multiki.R
 import com.example.multiki.domain.PathData
+import com.example.multiki.presentation.utils.drawToBitmap
 
 @Composable
 fun DrawCanvas(

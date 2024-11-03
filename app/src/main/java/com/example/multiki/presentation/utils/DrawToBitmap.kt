@@ -1,6 +1,5 @@
-package com.example.multiki.presentation.components
+package com.example.multiki.presentation.utils
 
-import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
@@ -58,7 +57,6 @@ fun drawToBitmap(
                     )
                 )
             }
-            Log.d("lama", "draw path")
         }
     }
 

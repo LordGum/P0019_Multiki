@@ -1,4 +1,4 @@
-package com.example.multiki.presentation.components
+package com.example.multiki.presentation.utils
 
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
