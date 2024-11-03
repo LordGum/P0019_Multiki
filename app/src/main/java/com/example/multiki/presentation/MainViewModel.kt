@@ -13,6 +13,7 @@ import com.example.multiki.data.RepositoryImpl
 import com.example.multiki.domain.Animation
 import com.example.multiki.domain.PathData
 import com.example.multiki.domain.Tool
+import com.example.multiki.presentation.components.deleteFile
 import com.example.multiki.presentation.components.getBitMap
 import com.example.multiki.presentation.components.saveBitmapToFile
 import com.example.multiki.ui.theme.Black
@@ -209,13 +210,12 @@ class MainViewModel(
         getBitMap(fileName, application)
     }
 
-    fun deleteAnimation() {
-        val state = _screenState.value as MainScreenState.Value
-        state.activeAnim?.let {
+    fun deleteAnimation(animation: Animation?) {
+        animation?.let {
             viewModelScope.launch(coroutineContext) {
-                val createAt = state.activeAnim?.createAt ?: 0L
+                val createAt = animation.createAt
                 repository.deleteAnim(createAt)
-                //todo удалить bitmap из хранилища
+                deleteFile(application, animation.fileName)
             }
         }
         pathList.clear()
@@ -256,6 +256,7 @@ class MainViewModel(
     }
 
     fun changeActiveAnim(animation: Animation?) {
+        Log.d("lama", "change anim $animation")
         _activeAnim.update { animation }
         viewModelScope.launch(coroutineContext) {
             animation?.fileName?.let {

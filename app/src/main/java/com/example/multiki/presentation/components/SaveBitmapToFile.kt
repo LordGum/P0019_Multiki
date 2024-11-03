@@ -41,3 +41,13 @@ suspend fun getBitMap(
         }
     }
 }
+
+fun deleteFile(application: Application, fileName: String): Boolean {
+    return try {
+        application.deleteFile("$fileName.jpg")
+        true
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
+    }
+}

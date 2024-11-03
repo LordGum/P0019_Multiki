@@ -2,6 +2,7 @@ package com.example.multiki.presentation
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -77,6 +78,8 @@ class MainActivity : ComponentActivity() {
                 val listForSlider =
                     remember { mutableStateOf<List<Triple<Animation, Bitmap?, Long>>>(listOf()) }
 
+                Log.d("lama", "state anim = ${state.activeAnim}")
+
                 Column(
                     modifier = Modifier
                         .background(Black)
@@ -94,7 +97,7 @@ class MainActivity : ComponentActivity() {
                         onBackClick = { vm.removeLastPath() },
                         onForwardClick = { vm.returnLastPath() },
                         onAddNewCanvas = { vm.changeSaveFlag(true) },
-                        onDeleteAnimation = { vm.deleteAnimation() },
+                        onDeleteAnimation = { vm.deleteAnimation(state.activeAnim) },
                         onLayersClick = { vm.changeSliderState(true) },
                         onRunClick = { vm.changeVideoRunState() }
                     )
