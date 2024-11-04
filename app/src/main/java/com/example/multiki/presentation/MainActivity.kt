@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
                     is MainScreenState.Loading -> LoadingScreen()
                     is MainScreenState.Video -> {
                         VideoScreen(
+                            dataList = animList.value,
                             listAnim = listForSlider.value,
                             onBackClick = {
                                 vm.changeScreenState(MainScreenState.Value())
@@ -62,12 +63,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
-
-//                LaunchedEffect(launchChange.value) {
-//                    CoroutineScope(Dispatchers.IO).launch {
-//                        listForSlider.value = vm.loadAnimList(animList.value)
-//                    }
-//                }
             }
         }
     }

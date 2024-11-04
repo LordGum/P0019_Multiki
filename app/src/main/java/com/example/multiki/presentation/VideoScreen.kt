@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.multiki.R
 import com.example.multiki.domain.Animation
@@ -44,6 +46,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun VideoScreen(
+    dataList: List<Animation>,
     listAnim: List<Triple<Animation, Bitmap?, Long>>,
     onBackClick: () -> Unit
 ) {
@@ -73,7 +76,20 @@ fun VideoScreen(
         Spacer(modifier = Modifier.height(18.dp))
 
         when (listAnim.size) {
-            0 -> { LoadingIndicator(modifier = Modifier.fillMaxHeight(0.85f)) }
+            0 -> {
+                if (dataList.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxHeight(0.85f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.nothing),
+                            color = White
+                        )
+                    }
+                }
+                else LoadingIndicator(modifier = Modifier.fillMaxHeight(0.85f))
+            }
             else -> {
                 VideoBox(
                     listAnim = listAnim,
