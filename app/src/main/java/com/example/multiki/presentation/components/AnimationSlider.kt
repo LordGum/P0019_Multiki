@@ -42,7 +42,6 @@ fun AnimationSlider(
     activeAnim: Animation?,
     animList: List<Animation>
 ) {
-
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,9 +58,6 @@ fun AnimationSlider(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if(list.isEmpty() && animList.isNotEmpty()) {
-            item { LoadingIndicator( Modifier.fillMaxWidth()) }
-        }
         if (animList.isEmpty()) {
             item { Text(text = stringResource(R.string.nothing)) }
         }

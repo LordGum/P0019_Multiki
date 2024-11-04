@@ -17,6 +17,7 @@ import com.example.multiki.ui.theme.White
 
 @Composable
 fun TopInstruments(
+    modifier: Modifier,
     backIconEnable: Boolean,
     forwardIconEnable: Boolean,
     runVideoState: Boolean,
@@ -24,15 +25,16 @@ fun TopInstruments(
     onForwardClick: () -> Unit,
     onAddNewCanvas: () -> Unit,
     onDeleteAnimation: () -> Unit,
+    onAllDeleteClick: () -> Unit,
     onLayersClick: () -> Unit,
     onRunClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 10.dp),
+            .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         BackAndForward(
             backIconEnable = backIconEnable,
@@ -43,6 +45,7 @@ fun TopInstruments(
         FileInstruments(
             onAddNewCanvas = onAddNewCanvas,
             onDeleteAnimation = onDeleteAnimation,
+            onAllDeleteClick = onAllDeleteClick,
             onLayersClick = onLayersClick
         )
         PlayerInstrument(
@@ -59,7 +62,7 @@ fun BackAndForward(
     onBackClick: () -> Unit,
     onForwardClick: () -> Unit
 ) {
-    Row(horizontalArrangement = Arrangement.Absolute.SpaceAround) {
+    Row(horizontalArrangement = Arrangement.Absolute.Center) {
         IconButton(
             onClick = onBackClick,
             enabled = backIconEnable
@@ -89,20 +92,18 @@ fun BackAndForward(
 @Composable
 fun FileInstruments(
     onDeleteAnimation: () -> Unit,
+    onAllDeleteClick: () -> Unit,
     onAddNewCanvas: () -> Unit,
     onLayersClick: () -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.Absolute.SpaceAround
+        horizontalArrangement = Arrangement.Absolute.SpaceAround,
+        verticalAlignment = Alignment.Top
     ) {
-        IconButton(onClick = { onDeleteAnimation() }) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                painter = painterResource(id = R.drawable.ic_delete),
-                contentDescription = null,
-                tint = White
-            )
-        }
+        DropSettingsMenu(
+            onDeleteClick = { onDeleteAnimation() },
+            onAllDeleteClick = { onAllDeleteClick() }
+        )
 
         IconButton(onClick = { onAddNewCanvas() }) {
             Icon(

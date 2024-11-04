@@ -11,4 +11,6 @@ interface Repository {
     fun getAnimList(): Flow<List<Animation>>
 
     suspend fun getAnimInfo(createAt: Long): Animation
+
+    suspend fun allDelete()
 }

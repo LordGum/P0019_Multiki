@@ -19,4 +19,7 @@ interface AnimationDao {
 
     @Query("SELECT * FROM anims ORDER BY createAt")
     fun getAnimList(): Flow<List<AnimationDbModel>>
+
+    @Query("DELETE FROM anims")
+    suspend fun allDelete()
 }

@@ -231,6 +231,12 @@ class MainViewModel(
         _bitmapImage.value = null
     }
 
+    fun allDelete() {
+        viewModelScope.launch(coroutineContext) {
+            repository.allDelete()
+        }
+    }
+
     fun removeLastPath() {
         val forwardList = _pathForwardList.value.toMutableList()
         forwardList.add(pathList.last())

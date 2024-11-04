@@ -28,5 +28,9 @@ class RepositoryImpl(
         return animDao.getAnimInfo(createAt).mapToEntity()
     }
 
+    override suspend fun allDelete() {
+        animDao.allDelete()
+    }
+
     fun getFileName(createAt: Long): String = "anim_$createAt"
 }

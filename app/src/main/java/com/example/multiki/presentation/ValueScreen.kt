@@ -51,7 +51,6 @@ fun ValueScreen(
     val sliderState = vm.sliderState.collectAsState()
     val saveFlag = vm.saveFlag.collectAsState()
     val videoRunState = vm.videoRunState.collectAsState()
-    val launchChange = remember { mutableStateOf(false) }
 
     val bitmapImage = vm.bitmapImage.collectAsState()
     val listForSlider =
@@ -61,33 +60,12 @@ fun ValueScreen(
         modifier = Modifier
             .background(Black)
             .fillMaxSize()
-            .padding(top = 34.dp)
+            .padding(top = 100.dp)
             .pointerInteropFilterNative {
                 vm.onTapFilter()
                 false
             }
     ) {
-        TopInstruments(
-            backIconEnable = pathList.isNotEmpty(),
-            forwardIconEnable = pathForwardList.value.isNotEmpty(),
-            runVideoState = videoRunState.value,
-            onBackClick = { vm.removeLastPath() },
-            onForwardClick = { vm.returnLastPath() },
-            onAddNewCanvas = {
-                vm.changeSaveFlag(true)
-                launchChange.value = false
-            },
-            onDeleteAnimation = {
-                vm.deleteAnimation(state.activeAnim)
-                launchChange.value = false
-            },
-            onLayersClick = {
-                vm.changeSliderState(true)
-            },
-            onRunClick = {
-                onRunClick()
-            }
-        )
         Spacer(modifier = Modifier.height(8.dp))
         DrawCanvas(
             modifier = Modifier
@@ -135,6 +113,30 @@ fun ValueScreen(
         )
     }
 
+    TopInstruments(
+        modifier = Modifier.padding(top = 40.dp),
+        backIconEnable = pathList.isNotEmpty(),
+        forwardIconEnable = pathForwardList.value.isNotEmpty(),
+        runVideoState = videoRunState.value,
+        onBackClick = { vm.removeLastPath() },
+        onForwardClick = { vm.returnLastPath() },
+        onAddNewCanvas = {
+            vm.changeSaveFlag(true)
+        },
+        onDeleteAnimation = {
+            vm.deleteAnimation(state.activeAnim)
+        },
+        onAllDeleteClick = {
+            vm.allDelete()
+        },
+        onLayersClick = {
+            vm.changeSliderState(true)
+        },
+        onRunClick = {
+            onRunClick()
+        }
+    )
+
     if (widthLineState.value) {
         PenWidthLine(
             sliderPosition = pathData.value.lineWidth,
@@ -145,7 +147,6 @@ fun ValueScreen(
     }
 
     if (sliderState.value) {
-        launchChange.value = true
         AnimationSlider(
             list = listForSlider.value,
             onAnimClick = { vm.changeActiveAnim(it) },
@@ -154,7 +155,7 @@ fun ValueScreen(
         )
     }
 
-    LaunchedEffect(launchChange.value) {
+    LaunchedEffect(animListState.value) {
         CoroutineScope(Dispatchers.IO).launch {
             listForSlider.value = vm.loadAnimList(animListState.value)
         }
